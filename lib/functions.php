@@ -4,6 +4,7 @@
  * Here we have functions.php, a very loose library that will be housing a number of functions that will be   *
  * used in this program. All the documentation will be placed above the actual function, and if you need any  *
  * more help with figure it out, be sure to email me at a awtantillo@gmail.com                                *
+ *                                                                                                            *
  **************************************************************************************************************
  * Documentation Guide :                                                                                      *
  * Boxes - Function Description                                                                               *
