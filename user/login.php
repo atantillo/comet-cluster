@@ -1,6 +1,6 @@
 <?php
     if(isset($_POST['username'], $_POST['password'])){
-        include '../lib/functions.php';
+        include '../lib/usercard.php';
         $db = db_connect();
         $user = mysqli_real_escape_string($db, $_POST['username']);
         $pass = mysqli_real_escape_string($db, $_POST['password']);
