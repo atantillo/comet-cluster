@@ -1,3 +1,17 @@
+<?php
+    # If and only if they submit the form and everything is entered...
+    if(isset($_POST['submit'])){
+        if (isset($_POST['user'],$_POST['pass'],$_POST['email'],$_POST['fname'],$_POST['lname'],$_POST['major'],$_POST['minor'])){
+            require '../lib/registercard.php';
+            $user = new RegisterCard($_POST['user'],$_POST['pass'],$_POST['fname'],$_POST['lname'],$_POST['major'],$_POST['minor'],$_POST['email']);
+            if($user->createuser() == true){
+                echo "<script>alert('User Successfully Created');</script>";
+                header('Location: ../index.php');
+            }
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,14 +31,17 @@
     <div data-role="content" class="bodyC">
         <h2>Comet Cluster</h2>
         <div data-role="content" class="center">
-            <form action="" method="post">
+            <form action="" method="post" data-ajax="false">
                 <div data-role="fieldcontain" class="ui-hide-label">
                     <fieldset data-role="controlgroup">
-                        <input type="text" name="user" id="basic" data-mini="true" placeholder="User Name" />
-                        <input type="text" name="pass" id="basic" data-mini="true" placeholder="Password" />
-                        <input type="text" name="email" id="basic" data-mini="true" placeholder="E-Mail" />
-                        <input type="text" name="fname" id="basic" data-mini="true" placeholder="First Name" />
-                        <input type="text" name="lname" id="basic" data-mini="true" placeholder="Last Name" />
+                        <input type="text" name="user" id="basic" data-mini="true" placeholder="User Name" required/>
+                        <input type="password" name="pass" id="basic" data-mini="true" placeholder="Password" required/>
+                        <input type="text" name="email" id="basic" data-mini="true" placeholder="E-Mail" required/>
+                        <input type="text" name="fname" id="basic" data-mini="true" placeholder="First Name" required/>
+                        <input type="text" name="lname" id="basic" data-mini="true" placeholder="Last Name" required/>
+                        <input type="text" name="major" id="basic" data-mini="true" placeholder="Major" required/>
+                        <input type="text" name="minor" id="basic" data-mini="true" placeholder="Minor" required/>
+                        <input type="submit" name="submit" id="basic" data-mini="true" value="Create">
                     </fieldset>
                 </div>
             </form>
