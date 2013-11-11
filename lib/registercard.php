@@ -4,33 +4,34 @@ class RegisterCard
 {
     /*********Variables***********/
 
-    public $db = false;
-    public $id = false;
-    public $user = false;
-    public $pass = false;
-    public $lname = false;
-    public $fname = false;
-    public $major = false;
-    public $minor = false;
-    public $email = false;
+    private $db = false;
+    #private $id = false;
+    private $user = false;
+    private $pass = false;
+    private $lname = false;
+    private $fname = false;
+    private $major = false;
+    private $minor = false;
+    private $email = false;
 
     /*********Constructors***********/
 
     # Constructor that uses session values
-    public function __construct($user, $pass, $fname, $lname, $major, $minor, $email)
+    public function __construct()
     {
         try {
             session_start();
             $this->dbConnect();
-            if(isset($user, $pass, $fname, $lname, $major, $minor, $email)){
-                $this->user = $this->sqlclean($user);
-                $this->$pass = $this->sqlclean($pass);
-                $this->lname = $this->sqlclean($lname);
-                $this->fname = $this->sqlclean($fname);
-                $this->major = $this->sqlclean($major);
-                $this->minor = $this->sqlclean($minor);
-                $this->email = $this->sqlclean($email);
-                return true;
+            # If and only if they submit the form and everything is entered...
+            if (isset($_POST['user'],$_POST['pass'],$_POST['email'],$_POST['fname'],$_POST['lname'],$_POST['major'],$_POST['minor']))
+            {
+                $this->user = $this->sqlclean($_POST['user']);
+                $this->$pass = $this->sqlclean($_POST['pass']);
+                $this->lname = $this->sqlclean($_POST['fname']);
+                $this->fname = $this->sqlclean($_POST['lname']);
+                $this->major = $this->sqlclean($_POST['major']);
+                $this->minor = $this->sqlclean($_POST['minor']);
+                $this->email = $this->sqlclean($_POST['email']);
             }
             return false;
         } catch(Exception $e) {return false;}
@@ -38,10 +39,18 @@ class RegisterCard
 
     /*********Public**********/
 
+    public function ismade(){
+        try{
+            if ($this->user != false){
+                return true;
+            }
+            return false;
+        } catch(Exception $e) {return false;}
+    }
+
     #Stores the new user in the database
     public function createuser(){
         try{
-            $this->dbconnect(); # We are now connected to the database.
             # First we are going to see if a user already exists with the given e-mail address
             if ($this->userexist() == true){
                 # First we are going to put the user account in users

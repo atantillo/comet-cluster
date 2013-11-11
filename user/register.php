@@ -1,12 +1,11 @@
 <?php
-    # If and only if they submit the form and everything is entered...
+    require '../lib/registercard.php';
     if(isset($_POST['submit'])){
-        if (isset($_POST['user'],$_POST['pass'],$_POST['email'],$_POST['fname'],$_POST['lname'],$_POST['major'],$_POST['minor'])){
-            require '../lib/registercard.php';
-            $user = new RegisterCard($_POST['user'],$_POST['pass'],$_POST['fname'],$_POST['lname'],$_POST['major'],$_POST['minor'],$_POST['email']);
-            if($user->createuser() == true){
-                echo "<script>alert('User Successfully Created');</script>";
-                header('Location: ../index.php');
+        $user = new RegisterCard();
+        if($user->ismade()){
+            if($user->createuser()){
+                echo "<script>alert('Account has been created, forwarding you to the home page');</script>";
+                header("Location : ../index.php");
             }
         }
     }
