@@ -56,17 +56,14 @@ class RegisterCard
     #Stores the new user in the database
     public function createuser()
     {
-        $error = "program starting";
         try
         {   # First we are going to see if a user already exists with the given e-mail address
             if ($this->userexist() != true)
             {
-                $error = "New User!";
                 # First we are going to put the user account in users
                 $sql = "INSERT INTO users (userLogin, userPass) VALUES ('$this->user', '$this->pass')";
                 if (mysqli_query($this->db, $sql) != false)
                 {
-                    $error = "User account made";
                     # Now lets find out the ID that the user was assigned so we can mess around with the userinfo table
                     $sql = "SELECT userID FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
                     $res = mysqli_query($this->db, $sql);
@@ -74,18 +71,37 @@ class RegisterCard
                     # Making sure we were able to retrieve the userID
                     if($row['userID'])
                     {
-                        $error = "User account attainable";
                         $id = $row['userID'];
                         # Now we are going to do the userinfo
                         $sql = "INSERT INTO userinfo (userID, firstName, lastName, major, minor, email) VALUES ('$id', '$this->fname', '$this->lname', '$this->major', '$this->minor', '$this->email')";
-                        if (mysqli_query($this->db, $sql) == true) {
-                            $error = "User Info Stored";
+                        if (mysqli_query($this->db, $sql) == true)
+                        {
                             #Everything was a success. Returning true to let the user know.
                             return true;
-                        } } } }
-            return $error;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch(Exception $e) { return false; }
+    }
+
+    public function printout()
+    {
+        try{
+            # For Debugging
+            echo "Printing out Register Object<br>";
+            echo "============================<br>";
+            echo "User : ". $this->user . "<br>";
+            echo "Pass : ". $this->pass . "<br>";
+            echo "Lname: ". $this->lname. "<br>";
+            echo "Fname: ". $this->fname. "<br>";
+            echo "Major: ". $this->major. "<br>";
+            echo "Minor: ". $this->minor. "<br>";
+            echo "Email: ". $this->email. "<br>";
+            echo "=========================<br>";
+            return true;
         } catch(Exception $e) {
-            echo "Warning : The following error has occurred : ".$e.". Your account was not made.";
             return false;
         }
     }
@@ -116,23 +132,7 @@ class RegisterCard
         # If the array is empty or false, we will make two new entries in database, in the userinfo and users table
         $sql = "SELECT userID FROM userinfo WHERE email = '$this->email'";
         $res = mysqli_query($this->db, $sql);
-        if(mysqli_num_rows($res) == 0) { return true; }
-        return false;
-    }
-
-    # Sends a query to the database, returns the result
-    private function dbquery($sql){
-        try{
-            $this->dbconnect();
-            return(mysqli_query($this->db, $sql));
-        } catch(Exception $e){return false;}
-    }
-
-    # Queries the database, returns an array of the contents
-    private function dbqueryarray($sql){
-        try{
-            $this->dbconnect();
-            return (mysqli_fetch_assoc(mysqli_query($this->db, $sql)));
-        } catch(Exception $e){return false;}
+        if(mysqli_num_rows($res) == 0) { return false; }
+        return true;
     }
 }
