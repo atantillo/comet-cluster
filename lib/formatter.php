@@ -33,8 +33,8 @@ class formatter
                         <link rel="stylesheet" href="../themes/jquery.mobile-1.2.0.css" />
                         <script src="../js/jquery-1.9.1.min.js"></script>
                         <script src="../js/jquery.mobile-1.3.2.min.js"></script>
+                        <script src="../js/functions.js"></script>
                     </head>
-
                     <body>
                     <div data-role="page">
                         <div data-role="header">
@@ -52,8 +52,8 @@ class formatter
                         <link rel="stylesheet" href="../themes/jquery.mobile-1.2.0.css" />
                         <script src="js/jquery-1.9.1.min.js"></script>
                         <script src="js/jquery.mobile-1.3.2.min.js"></script>
+                        <script src="js/functions.js"></script>
                     </head>
-
                     <body>
                     <div data-role="page">
                         <div data-role="header">
@@ -129,20 +129,80 @@ class formatter
             $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
             $res = mysqli_query($this->db, $sql);
             echo '<form action="courses_pending_check.php" method="post" data-ajax="false">';
-            echo 'Classes you are currently Enrolled in : <br>';
+            echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
             echo '<div data-role="fieldcontain">
                         <fieldset data-role="controlgroup">';
             while($row = mysqli_fetch_assoc($res))
             {
-                echo '<input type="checkbox" name="checkbox-'.$row['classID'].'" id="checkbox-'.$row['classID'].'" class="custom" value="checked" />
+                echo '<input type="checkbox" name="checkbox-'.$row['classID'].'" id="checkbox-'.$row['classID'].'" class="custom"/>
                       <label for="checkbox-'.$row['classID'].'">'.$row['classSchool'].''.$row['classSuffix'].' - '.$row['className'].'</label>';
             }
-            echo '            <input type="submit" value="Update Classes">
+            echo '            <br><input type="submit" value="Update Classes">
                         </fieldset>
                   </div></form>';
             return true;
         }catch(Exception $e){return false;}
     }
+
+    public function takenclasses()
+    {
+        try{
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 1 AND classes.classID = enrollment.classID";
+            $res = mysqli_query($this->db, $sql);
+            echo '<form action="courses_taken_check.php" method="post" data-ajax="false">';
+            echo '<b>How did you do in your classes?</b><br>';
+            echo '<div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup">';
+            while($row = mysqli_fetch_assoc($res))
+            {
+                echo '<input type="checkbox" name="checkbox-'.$row['classID'].'" id="checkbox-'.$row['classID'].'" class="custom" onclick="givegrade(\''.$row["classID"].'\')"/>
+                      <label for="checkbox-'.$row['classID'].'">'.$row['classSchool'].''.$row['classSuffix'].' - '.$row['className'].'</label>
+                      <div id="gradeBox-'.$row['classID'].'" data-role="fieldcontain"></div>';
+            }
+            echo '            <br><input type="submit" value="Update Classes">
+                        </fieldset>
+                  </div></form>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
+    public function completedclasses()
+    {
+        try{
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className, enrollment.progress FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress >= 2 AND classes.classID = enrollment.classID";
+            $res = mysqli_query($this->db, $sql);
+            echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
+            echo '<div data-role="content" class="center">
+                    <ul data-role="listview" data-filter="false">';
+            while($row = mysqli_fetch_assoc($res))
+            {
+                echo '<li class="center">'.$row['classSchool'].$row['classSuffix'].' - '.$row['className'].', '.$this->sqltograde($row['progress']).'</li>';
+            }
+            echo '  </ul>
+                  </div>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
+    public function profile()
+    {
+        try{
+            $sql = "SELECT users.userID, users.userLogin, users.userPass, userinfo.firstName, userinfo.lastName, userInfo.email FROM users INNER JOIN userinfo WHERE users.userID = userinfo.userID AND users.userID = '$this->id'";
+            $res = mysqli_query($this->db, $sql);
+            $row = mysqli_fetch_assoc($res);
+            echo '<form action="profile_update.php" method="post" data-ajax="false">';
+            echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
+            echo '<div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <input type="text" name="user" class="custom" value="'.$row['userLogin'].'"/>
+                        <label for="user">User Name</label>
+                        <br><input type="submit" value="Update Classes">
+                        </fieldset>
+                  </div></form>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
     private function dbconnect(){
         try{
             $db = mysqli_connect("localhost", "script", "pass123");
@@ -157,5 +217,31 @@ class formatter
         try{
             return(mysqli_real_escape_string($this->db, $sql));
         } catch(Exception $e){return false;}
+    }
+
+    private function sqltograde($g)
+    {
+        #2 = F, 3 = D, 4 = C, 5 = B, 6 = A
+        switch($g){
+            case 2:
+                $grade = "F";
+                break;
+            case 3:
+                $grade = "D";
+                break;
+            case 4:
+                $grade = "C";
+                break;
+            case 5:
+                $grade = "B";
+                break;
+            case 6:
+                $grade = "A";
+                break;
+            default:
+                $grade = "F";
+                break;
+        }
+        return $grade;
     }
 } 

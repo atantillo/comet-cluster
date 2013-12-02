@@ -672,3 +672,12 @@ li.center{
     text-align:center;
     margin:0 auto;
 }
+
+.grade{
+    display:inline;
+}
+
+.myframe{
+    height: 800px;
+    width: 1000px;
+}

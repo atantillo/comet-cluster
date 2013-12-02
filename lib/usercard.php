@@ -28,13 +28,14 @@ class UserCard
     {
         try{
             $this->dbconnect();
+            session_start();
             if(isset($_SESSION['user'], $_SESSION['pass'])){
                 $user = $_SESSION['user'];
                 $pass = $_SESSION['pass'];
                 $this->dbconnect();
                 $user = $this->sqlClean($user);
                 $pass = $this->sqlClean($pass);
-                return $this->userVerify($user, $pass);
+                $this->userVerify($user, $pass);
             }
             return false;
         } catch(Exception $e){return false;}
@@ -77,7 +78,11 @@ class UserCard
             $sql = "SELECT userLogin FROM users WHERE userLogin = '$user' AND userPass = '$pass'";
             $res = mysqli_query($this->db, $sql);
             $row = mysqli_fetch_assoc($res);
-            if ($user == $row['userLogin']){ return true; }
+            if ($user == $row['userLogin']){
+                $this->user = $user;
+                $this->pass = $pass;
+                return true;
+            }
             return false;
         } catch(Exception $e){return false;}
     }
@@ -85,7 +90,7 @@ class UserCard
     public function userID()
     {
         try{
-            $sql = "SELECT userID FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
+            $sql = "SELECT userID FROM users WHERE userLogin = '$this->user'";
             $res = mysqli_query($this->db, $sql);
             $row = mysqli_fetch_assoc($res);
             return $row['userID'];
@@ -95,21 +100,43 @@ class UserCard
     public function savependingclasses()
     {
         try {
-            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
+            $id = $this->userID();
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
             $res = mysqli_query($this->db, $sql);
             while($row = mysqli_fetch_assoc($res))
             {
-                $id = $this->userID();
                 $class = $row['classID'];
                 $temp = "checkbox-".$row['classID'];
-                if($_POST[$temp] == 'checked') # If the box is checked, it will update the information to the student's roster
+                if(isset($_POST[$temp])) # If the box is checked, it will update the information to the student's roster
                 {
+                    echo "<script>console.log('".$temp." is set!');</script>";
                     $sql = "UPDATE enrollment SET progress = 1 WHERE userID = '$id' AND classID = '$class'";
                     mysqli_query($this->db, $sql);
                 }
-                return true;
             }
-            return false;
+            return true;
+        } catch(Exception $e){return false;}
+    }
+
+    public function savetakenclasses()
+    {
+        try {
+            $id = $this->userID();
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$id' AND enrollment.progress = 1 AND classes.classID = enrollment.classID";
+            $res = mysqli_query($this->db, $sql);
+            while($row = mysqli_fetch_assoc($res))
+            {
+                $class = $row['classID'];
+                $temp = "gradeBox-".$row['classID'];
+                if(isset($_POST[$temp])) # If the box is checked, it will update the information to the student's roster
+                {
+                    $val = $_POST[$temp];
+                    echo "<script>console.log('".$temp." is set!');</script>";
+                    $sql = "UPDATE enrollment SET progress = '$val' WHERE userID = '$id' AND classID = '$class'";
+                    mysqli_query($this->db, $sql);
+                }
+            }
+            return true;
         } catch(Exception $e){return false;}
     }
 
