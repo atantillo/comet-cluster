@@ -9,6 +9,7 @@
  * Boxes - Function Description                                                                               *
  * //    - Purpose of Code                                                                                    *
  * #     - Miscellaneous Notes                                                                                *
+ * 0 = Nothing, 1 = Enrolled, 2 = F, 3 = D, 4 = C, 5 = B, 6 = A                                               *
 /**************************************************************************************************************/
 
 class UserCard
@@ -26,12 +27,11 @@ class UserCard
     public function __construct()
     {
         try{
-            session_start();
-            $this->dbConnect();
+            $this->dbconnect();
             if(isset($_SESSION['user'], $_SESSION['pass'])){
                 $user = $_SESSION['user'];
                 $pass = $_SESSION['pass'];
-                $this->dbConnect();
+                $this->dbconnect();
                 $user = $this->sqlClean($user);
                 $pass = $this->sqlClean($pass);
                 return $this->userVerify($user, $pass);
@@ -44,13 +44,13 @@ class UserCard
     public function withlogin($user, $pass)
     {
         try{
-            $this->dbConnect();
             $user = mysqli_real_escape_string($this->db, $user);
             $pass = mysqli_real_escape_string($this->db, $pass);
-            $pass = md5($pass);
             if ($this->userVerify($user, $pass)){
                 $this->user = $user;
                 $this->pass = $pass;
+                $_SESSION['user'] = $user;
+                $_SESSION['pass'] = $pass;
                 return true;
             }
             return false;
@@ -62,23 +62,51 @@ class UserCard
     # Checks to see if a user exists
     public function isLogged(){
         try{
-            $sql = "SELECT UserName FROM users WHERE userName = '$this->user' AND userPass = '$this->pass'";
-            $row = $this->dbQuery($sql);
-            if ($this->user == $row['UserName']){
-                return true;
-            }
+            $sql = "SELECT userLogin FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
+            $res = mysqli_query($this->db, $sql);
+            $row = mysqli_fetch_assoc($res);
+            if ($this->user == $row['userLogin']){ return true; }
             return false;
         } catch(Exception $e){return false;}
     }
 
     # Checks to see if a user exists with parameters
-    public function userVerify($user, $pass){
+    public function userVerify($user, $pass)
+    {
         try{
-            $sql = "SELECT UserName FROM users WHERE userName = '$user' AND userPass = '$pass'";
-            $row = $row = $this->dbQuery($sql);
-            if ($user == $row['UserName']){
-                $this->user = $user;
-                $this->pass = $pass;
+            $sql = "SELECT userLogin FROM users WHERE userLogin = '$user' AND userPass = '$pass'";
+            $res = mysqli_query($this->db, $sql);
+            $row = mysqli_fetch_assoc($res);
+            if ($user == $row['userLogin']){ return true; }
+            return false;
+        } catch(Exception $e){return false;}
+    }
+
+    public function userID()
+    {
+        try{
+            $sql = "SELECT userID FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
+            $res = mysqli_query($this->db, $sql);
+            $row = mysqli_fetch_assoc($res);
+            return $row['userID'];
+        } catch(Exception $e){return false;}
+    }
+
+    public function savependingclasses()
+    {
+        try {
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
+            $res = mysqli_query($this->db, $sql);
+            while($row = mysqli_fetch_assoc($res))
+            {
+                $id = $this->userID();
+                $class = $row['classID'];
+                $temp = "checkbox-".$row['classID'];
+                if($_POST[$temp] == 'checked') # If the box is checked, it will update the information to the student's roster
+                {
+                    $sql = "UPDATE enrollment SET progress = 1 WHERE userID = '$id' AND classID = '$class'";
+                    mysqli_query($this->db, $sql);
+                }
                 return true;
             }
             return false;
@@ -88,10 +116,10 @@ class UserCard
    /********Private*********/
 
     # Connect to the database
-    private function dbConnect(){
+    private function dbconnect(){
         try{
             $db = mysqli_connect("localhost", "script", "pass123");
-            mysqli_select_db($db, "users") or die ('Unable to connect to the MySQL');
+            mysqli_select_db($db, "mis-web") or die ('Unable to connect to the MySQL');
             $this->db = $db;
             return $db;
         }catch(Exception $e){return false;}
@@ -107,7 +135,7 @@ class UserCard
     # Queries the Database and returns an array of the results
     private function dbQuery($sql){
         try{
-            $this->dbConnect();
+            $this->dbconnect();
             $res = mysqli_query($this->db, $sql);
             return (mysqli_fetch_assoc($res));
         } catch(Exception $e){return false;}

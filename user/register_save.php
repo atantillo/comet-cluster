@@ -19,7 +19,7 @@
     $f->header();
     if($flag){
         echo 'Congratulations! Your account was successfully made. Please click the following button to return and log in with your credentials<br>';
-        echo '<a href="../index.php" data-role="button">Return to Log In</a>';
+        echo '<a href="login.php" data-role="button">Return to Log In</a>';
     } else {
         echo 'Either something went wrong with the user registration, or an account is already registered to that e-mail address. Please try again.<br>';
         echo '<a href="register.php" data-role="button">Try Registering Again</a>';

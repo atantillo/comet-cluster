@@ -76,8 +76,10 @@ class RegisterCard
                         $sql = "INSERT INTO userinfo (userID, firstName, lastName, major, minor, email) VALUES ('$id', '$this->fname', '$this->lname', '$this->major', '$this->minor', '$this->email')";
                         if (mysqli_query($this->db, $sql) == true)
                         {
+                            #Time to enroll the MIS student into classes
+                            $sql = "INSERT INTO enrollment (classID, userID, progress) SELECT classID, '$id', '0' FROM classes";
                             #Everything was a success. Returning true to let the user know.
-                            return true;
+                            if (mysqli_query($this->db, $sql) == true){ return true; }
                         }
                     }
                 }

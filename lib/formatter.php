@@ -1,13 +1,24 @@
 <?php
 
-class formatter {
+class formatter
+{
     private $db = false;
     private $index = false;
+    private $id = false;
 
-    public function __construct($i){
+    public function __construct($i)
+    {
+        session_start();
         $this->dbconnect();
         $this->index = $i;
     }
+
+    public function setID($i){
+        try{
+            $this->id = $i;
+            return true;
+        }catch(Exception $e){return false;}
+}
 
     public function header()
     {
@@ -61,7 +72,7 @@ class formatter {
                     <div data-role="footer">
                         <div data-role="navbar">
                             <ul>
-                                <li><a href="../index.php">Home</a>
+                                <li><a href="home.php">Home</a>
                                 <li><a href="../help/about.php">About</a>
                                 <li><a href="../help/contact.php">Contact Us</a>
                             </ul>
@@ -89,23 +100,49 @@ class formatter {
 
     public function majors()
     {
-        #$sql = "SELECT id, school FROM schools";
-        #$res = mysqli_query($this->db, $sql);
-        echo '<select name="majors" id="majors">';
-        #while($row = mysqli_fetch_assoc($res)){ echo'<option value="'.$row['id'].'">'.$row['school'].'</option>'; }
-        echo '<option value="1">Major : MIS</option>';
-        echo '</select>';
+        try{
+            #$sql = "SELECT id, school FROM schools";
+            #$res = mysqli_query($this->db, $sql);
+            echo '<select name="majors" id="majors">';
+            #while($row = mysqli_fetch_assoc($res)){ echo'<option value="'.$row['id'].'">'.$row['school'].'</option>'; }
+            echo '<option value="1">Major : MIS</option>';
+            echo '</select>';
+            return true;
+        }catch(Exception $e){return false;}
     }
 
     public function minors()
     {
-        $sql = "SELECT id, school FROM schools";
-        $res = mysqli_query($this->db, $sql);
-        echo '<select name="minors" id="minors">';
-        while($row = mysqli_fetch_assoc($res)){ echo'<option value="'.$row['id'].'">Minor : '.$row['school'].'</option>'; }
-        echo '</select>';
+        try{
+            $sql = "SELECT id, school FROM schools";
+            $res = mysqli_query($this->db, $sql);
+            echo '<select name="minors" id="minors">';
+            while($row = mysqli_fetch_assoc($res)){ echo'<option value="'.$row['id'].'">Minor : '.$row['school'].'</option>'; }
+            echo '</select>';
+            return true;
+        }catch(Exception $e){return false;}
     }
 
+    public function pendingclasses()
+    {
+        try{
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
+            $res = mysqli_query($this->db, $sql);
+            echo '<form action="courses_pending_check.php" method="post" data-ajax="false">';
+            echo 'Classes you are currently Enrolled in : <br>';
+            echo '<div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup">';
+            while($row = mysqli_fetch_assoc($res))
+            {
+                echo '<input type="checkbox" name="checkbox-'.$row['classID'].'" id="checkbox-'.$row['classID'].'" class="custom" value="checked" />
+                      <label for="checkbox-'.$row['classID'].'">'.$row['classSchool'].''.$row['classSuffix'].' - '.$row['className'].'</label>';
+            }
+            echo '            <input type="submit" value="Update Classes">
+                        </fieldset>
+                  </div></form>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
     private function dbconnect(){
         try{
             $db = mysqli_connect("localhost", "script", "pass123");
