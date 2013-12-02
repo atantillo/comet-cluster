@@ -29,8 +29,7 @@ class formatter
                     <head>
                         <title>Comet Cluster</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
-                        <link rel="stylesheet" href="../themes/Test.css" />
-                        <link rel="stylesheet" href="../themes/jquery.mobile-1.2.0.css" />
+                        <link rel="stylesheet" href="../themes/style.css" />
                         <script src="../js/jquery-1.9.1.min.js"></script>
                         <script src="../js/jquery.mobile-1.3.2.min.js"></script>
                         <script src="../js/functions.js"></script>
@@ -48,8 +47,7 @@ class formatter
                     <head>
                         <title>Comet Cluster</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
-                        <link rel="stylesheet" href="../themes/Test.css" />
-                        <link rel="stylesheet" href="../themes/jquery.mobile-1.2.0.css" />
+                        <link rel="stylesheet" href="themes/style.css" />
                         <script src="js/jquery-1.9.1.min.js"></script>
                         <script src="js/jquery.mobile-1.3.2.min.js"></script>
                         <script src="js/functions.js"></script>

@@ -4,7 +4,7 @@
     <title>Comet Cluster</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="themes/Test.css" />
-    <link rel="stylesheet" href="themes/jquery.mobile-1.2.0.css" />
+    <link rel="stylesheet" href="themes/style.css" />
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
 </head>
