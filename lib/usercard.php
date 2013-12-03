@@ -16,10 +16,11 @@ class UserCard
 {
     /*********Variables***********/
 
-    public $user = false;
-    public $pass = false;
-    public $db = false;
-    public $admin = false;
+    private $id = false;
+    private $user = false;
+    private $pass = false;
+    private $db = false;
+    private $admin = false;
 
     /*********Constructors***********/
 
@@ -81,6 +82,11 @@ class UserCard
             if ($user == $row['userLogin']){
                 $this->user = $user;
                 $this->pass = $pass;
+                # Now getting user ID
+                $sql = "SELECT userID FROM users WHERE userLogin = '$this->user'";
+                $res = mysqli_query($this->db, $sql);
+                $row = mysqli_fetch_assoc($res);
+                $this->id = $row['userID'];
                 return true;
             }
             return false;
@@ -89,12 +95,8 @@ class UserCard
 
     public function userID()
     {
-        try{
-            $sql = "SELECT userID FROM users WHERE userLogin = '$this->user'";
-            $res = mysqli_query($this->db, $sql);
-            $row = mysqli_fetch_assoc($res);
-            return $row['userID'];
-        } catch(Exception $e){return false;}
+        try{ return($this->id); }
+        catch(Exception $e){return false;}
     }
 
     public function savependingclasses()
@@ -137,6 +139,64 @@ class UserCard
                 }
             }
             return true;
+        } catch(Exception $e){return false;}
+    }
+
+    public function savenotes()
+    {
+        try {
+            $text = $this->sqlClean($_POST['textarea']);
+            $sql = "UPDATE notes SET notes = '$text' WHERE userID = '$this->id'";
+            if(mysqli_query($this->db, $sql)){ return true; }
+            return false;
+        } catch(Exception $e){return false;}
+    }
+
+    public function savecurrentclasses()
+    {
+        try {
+            $id = $this->userID();
+            $sql = "SELECT classID, classInst FROM enrollment WHERE userID = '$this->id' AND progress = 1";
+            $res = mysqli_query($this->db, $sql);
+            while($row = mysqli_fetch_assoc($res))
+            {
+                $class = $row['classID'];
+                $temp = "checkbox-".$row['classID'];
+                if(isset($_POST[$temp])) # If the box is checked, it will update the information to the student's roster
+                {
+                    $t_value = $_POST[$temp];
+                    echo "<script>console.log('".$temp." is set!');</script>";
+                    $sql = "UPDATE enrollment SET classInst = '$t_value' WHERE userID = '$this->id' AND classID = '$class'";
+                    mysqli_query($this->db, $sql);
+                }
+            }
+            return true;
+        } catch(Exception $e){return false;}
+    }
+
+    public function profile()
+    {
+        try{
+            #First let us save all the form values
+            $p = $this->sqlClean($_POST['pass']);
+            $f = $this->sqlClean($_POST['fname']);
+            $l = $this->sqlClean($_POST['lname']);
+            $e = $this->sqlClean($_POST['email']);
+            $cp = $this->sqlClean($_POST['cpass']);
+            $sql = "SELECT userLogin FROM users WHERE userLogin = '$this->user' AND userPass = '$cp'";
+            $res = mysqli_query($this->db, $sql);
+            if(mysqli_num_rows($res) > 0) # If we have a match according to the previous SQL statement
+            {
+                $sql = "UPDATE users SET userPass = '$p' WHERE userLogin = '$this->user' AND userID = '$this->id'";
+                if(mysqli_query($this->db, $sql)){
+                    $sql = "UPDATE userinfo SET firstName = '$f', lastName = '$l', email = '$e' WHERE userID = '$this->id'";
+                    if (mysqli_query($this->db, $sql)){
+                        $this->pass = $p;
+                        return true;
+                    }
+                }
+            }
+            return false;
         } catch(Exception $e){return false;}
     }
 

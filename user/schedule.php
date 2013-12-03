@@ -6,14 +6,8 @@
     $f->header();
     $flag = false; # Checking to see if the user is logged in
     if ($user->isLogged()){
-        if($f->setID($user->userID())){ # Getting the user ID
-            if($f->profile()){
-                $flag = true;
-            }
-        }
-    }
-    if ($flag == false){
-        echo "Still messed up";
+        $f->setID($user->userID()); # Getting the user ID
+        $f->schedule();
     }
     $f->footer();
 ?>

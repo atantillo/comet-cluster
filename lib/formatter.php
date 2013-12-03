@@ -142,6 +142,31 @@ class formatter
         }catch(Exception $e){return false;}
     }
 
+    public function currentclasses()
+    {
+        try{
+            $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className,
+                    classavailable.timeStart, classavailable.timeEnd, classavailable.classDays, classavailable.classRoom, classavailable.classInst,
+                    instructors.name FROM classes INNER JOIN enrollment INNER JOIN instructors INNER JOIN classavailable
+                    WHERE enrollment.userID = '$this->id' AND enrollment.progress = 1 AND classes.classID = enrollment.classID
+                    AND classes.classID = classavailable.classID AND classavailable.instID = instructors.instID ORDER BY classes.classID ASC";
+            $res = mysqli_query($this->db, $sql);
+            echo '<form action="courses_current_check.php" method="post" data-ajax="false">';
+            echo '<b>Pick out a class that is currently available</b><br>';
+            echo '<div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup">';
+            while($row = mysqli_fetch_assoc($res))
+            {
+                echo '<input type="radio" name="checkbox-'.$row['classID'].'" id="checkbox-'.$row['classID'].'" class="custom" value="'.$row['classInst'].' checked"/>
+                      <label for="checkbox-'.$row['classID'].'">'.$row['classSchool'].''.$row['classSuffix'].' - '.$row['className'].' with '.$row['name'].' on '.$row['classDays'].' at '.$row['timeStart'].'-'.$row['timeEnd'].'</label>';
+            }
+            echo '            <br><input type="submit" value="Update Classes">
+                        </fieldset>
+                  </div></form>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
     public function takenclasses()
     {
         try{
@@ -169,7 +194,7 @@ class formatter
         try{
             $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className, enrollment.progress FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress >= 2 AND classes.classID = enrollment.classID";
             $res = mysqli_query($this->db, $sql);
-            echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
+            echo '<b>Classes You Are Currently Completed</b><br>';
             echo '<div data-role="content" class="center">
                     <ul data-role="listview" data-filter="false">';
             while($row = mysqli_fetch_assoc($res))
@@ -182,19 +207,68 @@ class formatter
         }catch(Exception $e){return false;}
     }
 
+    public function schedule()
+    {
+        try{
+            $sql = "SELECT classes.classSchool, classes.classSuffix, classes.className,
+                    classavailable.timeStart, classavailable.timeEnd, classavailable.classDays, classavailable.classRoom, classavailable.classInst,
+                    instructors.name FROM classes INNER JOIN enrollment INNER JOIN instructors INNER JOIN classavailable
+                    WHERE enrollment.userID = '$this->id' AND enrollment.progress = 1 AND enrollment.classInst != 0 AND classes.classID = enrollment.classID
+                    AND classes.classID = classavailable.classID AND classavailable.instID = instructors.instID";
+            $res = mysqli_query($this->db, $sql);
+            echo '<b>Classes You Are Currently Enrolled In</b><br>';
+            echo '<div data-role="content" class="center">
+                    <ul data-role="listview" data-filter="false">';
+            while($row = mysqli_fetch_assoc($res))
+            {
+                echo '<li class="center">'.$row['classSchool'].''.$row['classSuffix'].' - '.$row['className'].' with '.$row['name'].' on '.$row['classDays'].' at '.$row['timeStart'].'-'.$row['timeEnd'].'</li>';
+            }
+            echo '  </ul>
+                  </div>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
+    public function notes()
+    {
+        try{
+            $sql = "SELECT notes FROM notes WHERE userID = '$this->id'";
+            $res = mysqli_query($this->db, $sql);
+            $row = mysqli_fetch_assoc($res);
+            echo '<b>Your Note Pad</b><br>';
+            echo '<form action="save_notes.php" method="post" data-ajax="false">';
+            echo '<div data-role="fieldcontain" class="center">';
+            echo '<textarea cols="100" rows="8" name="textarea" id="textarea">'.$row['notes'].'</textarea>';
+            echo '<br><input type="submit" value="Save Notes">
+                  </div></form>';
+            return true;
+        }catch(Exception $e){return false;}
+    }
+
+
     public function profile()
     {
         try{
-            $sql = "SELECT users.userID, users.userLogin, users.userPass, userinfo.firstName, userinfo.lastName, userInfo.email FROM users INNER JOIN userinfo WHERE users.userID = userinfo.userID AND users.userID = '$this->id'";
+            $sql = "SELECT users.userID, users.userLogin, users.userPass, userinfo.firstName, userinfo.lastName, userinfo.email FROM users INNER JOIN userinfo WHERE users.userID = userinfo.userID AND users.userID = '$this->id'";
             $res = mysqli_query($this->db, $sql);
             $row = mysqli_fetch_assoc($res);
             echo '<form action="profile_update.php" method="post" data-ajax="false">';
             echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
             echo '<div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <input type="text" name="user" class="custom" value="'.$row['userLogin'].'"/>
                         <label for="user">User Name</label>
-                        <br><input type="submit" value="Update Classes">
+                        <input type="text" id="basic" data-mini="true" name="user" placeholder="User Name" readonly value="'.$row['userLogin'].'"/>
+                        <label for="user">New Password</label>
+                        <input type="password" id="basic" data-mini="true" name="pass"/>
+                        <label for="user">First Name</label>
+                        <input type="text" id="basic" data-mini="true" name="fname" placeholder="First Name" value="'.$row['firstName'].'"/>
+                        <label for="user">Last Name</label>
+                        <input type="text" id="basic" data-mini="true" name="lname" placeholder="Last Name" value="'.$row['lastName'].'"/>
+                        <label for="user">Email Name</label>
+                        <input type="text" id="basic" data-mini="true" name="email" placeholder="Email" value="'.$row['email'].'"/>
+                        <label for="user">Current Password</label>
+                        <br><input type="password" id="basic" data-mini="true" name="cpass" value=""/>
+                        <br><input type="submit" value="Update Info">
                         </fieldset>
                   </div></form>';
             return true;
@@ -242,4 +316,4 @@ class formatter
         }
         return $grade;
     }
-} 
+}
