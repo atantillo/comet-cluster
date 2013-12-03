@@ -127,7 +127,7 @@ class formatter
             $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress = 0 AND classes.classID = enrollment.classID";
             $res = mysqli_query($this->db, $sql);
             echo '<form action="courses_pending_check.php" method="post" data-ajax="false">';
-            echo '<b>Classes You Are Currently Enrolled In or Have Completed</b><br>';
+            echo '<b>Classes That Are Required For Your Major</b><br>';
             echo '<div data-role="fieldcontain">
                         <fieldset data-role="controlgroup">';
             while($row = mysqli_fetch_assoc($res))
@@ -152,7 +152,7 @@ class formatter
                     AND classes.classID = classavailable.classID AND classavailable.instID = instructors.instID ORDER BY classes.classID ASC";
             $res = mysqli_query($this->db, $sql);
             echo '<form action="courses_current_check.php" method="post" data-ajax="false">';
-            echo '<b>Pick out a class that is currently available</b><br>';
+            echo '<b>What Class Did You Enroll In?</b><br>';
             echo '<div data-role="fieldcontain">
                         <fieldset data-role="controlgroup">';
             while($row = mysqli_fetch_assoc($res))
@@ -194,7 +194,7 @@ class formatter
         try{
             $sql = "SELECT classes.classID, classes.classSchool, classes.classSuffix, classes.className, enrollment.progress FROM classes INNER JOIN enrollment WHERE enrollment.userID = '$this->id' AND enrollment.progress >= 2 AND classes.classID = enrollment.classID";
             $res = mysqli_query($this->db, $sql);
-            echo '<b>Classes You Are Currently Completed</b><br>';
+            echo '<b>Courses You Have Completed</b><br>';
             echo '<div data-role="content" class="center">
                     <ul data-role="listview" data-filter="false">';
             while($row = mysqli_fetch_assoc($res))
