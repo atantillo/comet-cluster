@@ -1,4 +1,4 @@
-<?php include '../lib/formatter.php'; $f = new formatter(false); $f->header(); ?>
+<?php include '../lib/formatter.php'; $f = new formatter(false, true); $f->header(); ?>
 
 <h2>Group 3</h2>
 <ul data-role="listview" data-filter="false" class="center">

@@ -4,13 +4,15 @@ class formatter
 {
     private $db = false;
     private $index = false;
+    private $about = false;
     private $id = false;
 
-    public function __construct($i)
+    public function __construct($i, $a)
     {
         session_start();
         $this->dbconnect();
         $this->index = $i;
+        $this->about = $a;
     }
 
     public function setID($i){
@@ -27,7 +29,7 @@ class formatter
             echo '<!DOCTYPE html>
                     <html>
                     <head>
-                        <title>Comet Cluster</title>
+                        <title>CourseChex</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <link rel="stylesheet" href="../themes/style.css" />
                         <script src="../js/jquery-1.9.1.min.js"></script>
@@ -37,15 +39,15 @@ class formatter
                     <body>
                     <div data-role="page">
                         <div data-role="header">
-                            <h1>Welcome to the Comet Cluster</h1>
+                            <h1>Welcome to the CourseChex</h1>
                         </div>
                         <div data-role="content" class="bodyC">
-                            <h2>Comet Cluster</h2>';
+                            <h2>CourseChex</h2>';
         } else {
             echo '<!DOCTYPE html>
                     <html>
                     <head>
-                        <title>Comet Cluster</title>
+                        <title>CourseChex</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <link rel="stylesheet" href="themes/style.css" />
                         <script src="js/jquery-1.9.1.min.js"></script>
@@ -55,16 +57,46 @@ class formatter
                     <body>
                     <div data-role="page">
                         <div data-role="header">
-                            <h1>Welcome to the Comet Cluster</h1>
+                            <h1>Welcome to the CourseChex</h1>
                         </div>
                         <div data-role="content" class="bodyC">
-                            <h2>Comet Cluster</h2>';
+                            <h2>CourseChex</h2>';
         }
     }
 
     public function footer()
     {
-        if ($this->index == false)
+        if ($this->index){
+            echo'</div>
+                    <div data-role="footer">
+                        <div data-role="navbar">
+                            <ul>
+                                <li><a href="index.php">Home</a>
+                                <li><a href="help/about.php">About</a>
+                                <li><a href="help/contact.php">Contact Us</a>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </body>
+                </html>';
+        }
+        else  if ($this->about){
+            echo'</div>
+                    <div data-role="footer">
+                        <div data-role="navbar">
+                            <ul>
+                                <li><a href="../index.php">Home</a>
+                                <li><a href="about.php">About</a>
+                                <li><a href="contact.php">Contact Us</a>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </body>
+                </html>';
+        }
+        else
         {
             echo'</div>
                     <div data-role="footer">
@@ -73,20 +105,6 @@ class formatter
                                 <li><a href="home.php">Home</a>
                                 <li><a href="../help/about.php">About</a>
                                 <li><a href="../help/contact.php">Contact Us</a>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                </body>
-                </html>';
-        } else {
-            echo'</div>
-                    <div data-role="footer">
-                        <div data-role="navbar">
-                            <ul>
-                                <li><a href="index.php">Home</a>
-                                <li><a href="help/about.php">About</a>
-                                <li><a href="help/contact.php">Contact Us</a>
                             </ul>
                         </div>
                     </div>
