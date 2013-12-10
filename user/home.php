@@ -1,13 +1,11 @@
 <?php
     include '../lib/formatter.php';
     include '../lib/usercard.php';
-    $f = new formatter(false);
-    $f->header();
     $user = new UserCard();
-    $flag = false;
-    if ($user->isLogged()){ $flag = true; }
-    if($flag)
+    if ($user->isLogged())
     {
+        $f = new formatter(false);
+        $f->header();
         echo'<div data-role="content" class="center">
                 <ul data-role="listview" data-filter="false">
                     <li class="center"><a href="courses_pending.php">Required Courses</a></li>
@@ -20,10 +18,6 @@
                     <li class="center"><a href="profile.php">Profile</a></li>
                 </ul>
             </div>';
-    } else {
-        echo 'Your session has ended. Please try logging in again.';
-        echo'<meta http-equiv="refresh" content="5; url=../index.php">';
-    }
+        $f->footer();
+    } else { echo "header('Location: 162.219.3.183/cc/');"; }
 ?>
-
-<?php $f->footer(); ?>

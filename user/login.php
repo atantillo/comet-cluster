@@ -1,4 +1,8 @@
-<?php include '../lib/formatter.php'; $f = new formatter(false); $f->header(); ?>
+<?php
+    include '../lib/formatter.php';
+    $f = new formatter(false);
+    $f->header();
+?>
 
 <form action="login_check.php" method="post" data-ajax="false">
     <div data-role="fieldcontain" class="ui-hide-label">
@@ -12,4 +16,6 @@
     <input type="submit" value="Log In">
 </form>
 
-<?php $f->footer(); ?>
+<?php
+    $f->footer();
+?>

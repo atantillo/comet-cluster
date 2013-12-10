@@ -1,4 +1,8 @@
-<?php include '../lib/formatter.php'; $f = new formatter(false); $f->header(); ?>
+<?php
+    include '../lib/formatter.php';
+    $f = new formatter(false);
+    $f->header();
+?>
 
 <div data-role="content" class="center">
     <form action="register_save.php" method="post" data-ajax="false">

@@ -37,6 +37,7 @@ class UserCard
                 $user = $this->sqlClean($user);
                 $pass = $this->sqlClean($pass);
                 $this->userVerify($user, $pass);
+                return true;
             }
             return false;
         } catch(Exception $e){return false;}
@@ -68,7 +69,14 @@ class UserCard
             $res = mysqli_query($this->db, $sql);
             $row = mysqli_fetch_assoc($res);
             if ($this->user == $row['userLogin']){ return true; }
-            return false;
+            else {
+                $this->user = "";
+                $this->pass = "";
+                $_SESSION['user'] = "";
+                $_SESSION['pass'] = "";
+                echo "header('Location: 162.219.3.183/cc/');";
+                return false;
+            }
         } catch(Exception $e){return false;}
     }
 
