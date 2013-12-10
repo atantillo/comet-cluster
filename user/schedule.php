@@ -9,5 +9,5 @@
         $f->setID($user->userID()); # Getting the user ID
         $f->schedule();
         $f->footer();
-    } else { echo "header('Location: 162.219.3.183/cc/');"; }
+    } else { header('Location: http://162.219.3.183/cc/'); }
 ?>

@@ -1,4 +1,5 @@
 <?php
+    session_destroy();
     include 'lib/formatter.php';
     $f = new formatter(true);
     $f->header();

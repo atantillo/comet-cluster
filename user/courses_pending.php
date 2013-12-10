@@ -10,11 +10,10 @@
         if($f->setID($user->userID())){ # Getting the user ID
             if($f->pendingclasses()){
                 $flag = true;
+            } else {
+                echo "Still messed up";
             }
         }
-        if ($flag == false){
-            echo "Still messed up";
-        }
         $f->footer();
-    } else { echo "header('Location: 162.219.3.183/cc/');"; }
+    } else { header('Location: http://162.219.3.183/cc/'); }
 ?>

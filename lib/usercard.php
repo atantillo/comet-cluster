@@ -28,16 +28,15 @@ class UserCard
     public function __construct()
     {
         try{
-            $this->dbconnect();
             session_start();
-            if(isset($_SESSION['user'], $_SESSION['pass'])){
+            $this->dbconnect();
+            if(isset($_SESSION['user'], $_SESSION['pass']))
+            {
                 $user = $_SESSION['user'];
                 $pass = $_SESSION['pass'];
-                $this->dbconnect();
                 $user = $this->sqlClean($user);
                 $pass = $this->sqlClean($pass);
-                $this->userVerify($user, $pass);
-                return true;
+                if ($this->userVerify($user, $pass)){ return true; }
             }
             return false;
         } catch(Exception $e){return false;}
@@ -63,37 +62,44 @@ class UserCard
     /*********Public***********/
 
     # Checks to see if a user exists
-    public function isLogged(){
-        try{
-            $sql = "SELECT userLogin FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
-            $res = mysqli_query($this->db, $sql);
-            $row = mysqli_fetch_assoc($res);
-            if ($this->user == $row['userLogin']){ return true; }
-            else {
-                $this->user = "";
-                $this->pass = "";
-                $_SESSION['user'] = "";
-                $_SESSION['pass'] = "";
-                echo "header('Location: 162.219.3.183/cc/');";
-                return false;
-            }
-        } catch(Exception $e){return false;}
+    public function isLogged()
+    {
+        if(($this->user!=false)&&($this->user!=false))
+        {
+            try
+            {
+                $sql = "SELECT userLogin, userPass FROM users WHERE userLogin = '$this->user' AND userPass = '$this->pass'";
+                if($res = mysqli_query($this->db, $sql))
+                {
+                    $row = mysqli_fetch_assoc($res);
+                    if (($this->user == $row['userLogin'])&&($this->pass == $row['userPass']))
+                    {
+                        echo "flag5";
+                        return true;
+                    }
+                    else
+                    {
+                        $this->user = "";
+                        $this->pass = "";
+                        $_SESSION['user'] = "";
+                        $_SESSION['pass'] = "";
+                        return false;
+                    }
+                }
+            } catch(Exception $e){return false;}
+        }
     }
 
     # Checks to see if a user exists with parameters
     public function userVerify($user, $pass)
     {
         try{
-            $sql = "SELECT userLogin FROM users WHERE userLogin = '$user' AND userPass = '$pass'";
+            $sql = "SELECT userLogin, userID FROM users WHERE userLogin = '$user' AND userPass = '$pass'";
             $res = mysqli_query($this->db, $sql);
             $row = mysqli_fetch_assoc($res);
             if ($user == $row['userLogin']){
                 $this->user = $user;
                 $this->pass = $pass;
-                # Now getting user ID
-                $sql = "SELECT userID FROM users WHERE userLogin = '$this->user'";
-                $res = mysqli_query($this->db, $sql);
-                $row = mysqli_fetch_assoc($res);
                 $this->id = $row['userID'];
                 return true;
             }
@@ -225,6 +231,22 @@ class UserCard
         try{
             return(mysqli_real_escape_string($this->db, $sql));
         } catch(Exception $e){return false;}
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPass()
+    {
+        return $this->pass;
     }
 
     # Queries the Database and returns an array of the results

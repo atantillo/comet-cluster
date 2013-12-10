@@ -40,6 +40,7 @@ class formatter
                     <div data-role="page">
                         <div data-role="header">
                             <h1>Welcome to the CourseChex</h1>
+                            <a href="../" data-icon="home" data-iconpos="notext" data-theme="b" data-ajax="false" class="ui-btn-right ui-btn-corner-bl">Log Out</a>
                         </div>
                         <div data-role="content" class="bodyC">
                             <h2>CourseChex</h2>';

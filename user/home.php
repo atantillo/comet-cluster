@@ -1,6 +1,7 @@
 <?php
     include '../lib/formatter.php';
     include '../lib/usercard.php';
+    session_start();
     $user = new UserCard();
     if ($user->isLogged())
     {
@@ -19,5 +20,5 @@
                 </ul>
             </div>';
         $f->footer();
-    } else { echo "header('Location: 162.219.3.183/cc/');"; }
+    } else { header('Location: http://162.219.3.183/cc/'); }
 ?>

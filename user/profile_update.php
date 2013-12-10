@@ -17,5 +17,5 @@
         echo'<meta http-equiv="refresh" content="5; url=home.php">';
         echo '<a href="home.php" data-role="button">Take Me There Now</a>';
         $f->footer();
-    } else { echo "header('Location: 162.219.3.183/cc/');"; }
+    } else { header('Location: http://162.219.3.183/cc/'); }
 ?>
